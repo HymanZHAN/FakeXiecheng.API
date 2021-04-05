@@ -12,5 +12,11 @@ namespace FakeXiecheng.API.Controllers
         {
             return new string[] { "value1", "value2" };
         }
+        
+        [HttpPost]
+        public IEnumerable<string> GetString()
+        {
+            return new string[] { "value1", "value2" };
+        }
     }
 }
