@@ -10,6 +10,7 @@ namespace FakeXiecheng.API.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            var result = new string[] { };
             return new string[] { "value1", "value2" };
         }
         
