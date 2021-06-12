@@ -1,12 +1,12 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AutoMapper;
 using FakeXiecheng.API.Dto;
+using FakeXiecheng.API.Models;
 using FakeXiecheng.API.ResourceParameters;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace FakeXiecheng.API.Controllers
 {
@@ -32,7 +32,7 @@ namespace FakeXiecheng.API.Controllers
                                                                           parameters.RatingComparison,
                                                                           parameters.RatingValue);
 
-            if (routesFromRepo == null || routesFromRepo.Count() <= 0)
+            if (routesFromRepo == null || !routesFromRepo.Any())
             {
                 return NotFound("没有旅游路线");
             }
@@ -42,7 +42,7 @@ namespace FakeXiecheng.API.Controllers
             return Ok(touristRoutes);
         }
 
-        [HttpGet("{touristRouteId:Guid}")]
+        [HttpGet("{touristRouteId:Guid}", Name = "GetTouristRouteById")]
         [HttpHead("{touristRouteId:Guid}")]
         public IActionResult GetTouristRouteById(Guid touristRouteId)
         {
@@ -56,6 +56,16 @@ namespace FakeXiecheng.API.Controllers
             var touristRouteDto = _mapper.Map<TouristRouteDto>(routeFromRepo);
 
             return Ok(touristRouteDto);
+        }
+
+        [HttpPost]
+        public IActionResult CreateTouristRoute([FromBody] TouristRouteForCreationDto touristRouteForCreateionDto)
+        {
+            var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteForCreateionDto);
+            _touristRouteRepository.AddTouristRoute(touristRouteModel);
+            _touristRouteRepository.Save();
+            var result = _mapper.Map<TouristRouteDto>(touristRouteModel);
+            return CreatedAtRoute("GetTouristRouteById", new { touristRouteId = touristRouteModel.Id }, result);
         }
     }
 }

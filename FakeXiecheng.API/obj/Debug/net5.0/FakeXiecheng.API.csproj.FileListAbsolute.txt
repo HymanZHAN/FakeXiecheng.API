@@ -59,7 +59,7 @@ C:\Users\zhanx\Development\MOOC\backend\asp.net\FakeXiecheng.API\FakeXiecheng.AP
 C:\Users\zhanx\Development\MOOC\backend\asp.net\FakeXiecheng.API\FakeXiecheng.API\bin\Debug\net5.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\zhanx\Development\MOOC\backend\asp.net\FakeXiecheng.API\FakeXiecheng.API\bin\Debug\net5.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\zhanx\Development\MOOC\backend\asp.net\FakeXiecheng.API\FakeXiecheng.API\bin\Debug\net5.0\Swashbuckle.AspNetCore.SwaggerUI.dll
-C:\Users\zhanx\Development\MOOC\backend\asp.net\FakeXiecheng.API\FakeXiecheng.API\obj\Debug\net5.0\FakeXiecheng.API.csprojAssemblyReference.cache
 C:\Users\zhanx\Development\MOOC\backend\asp.net\FakeXiecheng.API\FakeXiecheng.API\obj\Debug\net5.0\FakeXiecheng.API.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\zhanx\Development\MOOC\backend\asp.net\FakeXiecheng.API\FakeXiecheng.API\bin\Debug\net5.0\AutoMapper.dll
 C:\Users\zhanx\Development\MOOC\backend\asp.net\FakeXiecheng.API\FakeXiecheng.API\bin\Debug\net5.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\zhanx\Development\MOOC\backend\asp.net\FakeXiecheng.API\FakeXiecheng.API\obj\Debug\net5.0\FakeXiecheng.API.csproj.AssemblyReference.cache

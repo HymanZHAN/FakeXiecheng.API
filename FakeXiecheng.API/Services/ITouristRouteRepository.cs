@@ -1,8 +1,8 @@
-﻿using FakeXiecheng.API.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FakeXiecheng.API.Models;
 
 namespace FakeXiecheng.API.Services
 {
@@ -14,5 +14,10 @@ namespace FakeXiecheng.API.Services
 
         IEnumerable<TouristRoutePicture> GetPicturesByTouristRouteId(Guid touristRouteId);
         TouristRoutePicture GetPicture(int pictureId);
+
+        void AddTouristRoute(TouristRoute touristRoute);
+        void AddTouristRoutePicture(Guid touristRouteId, TouristRoutePicture picture);
+        bool Save();
+
     }
 }

@@ -1,10 +1,10 @@
-﻿using FakeXiecheng.API.Database;
-using FakeXiecheng.API.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FakeXiecheng.API.Database;
+using FakeXiecheng.API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FakeXiecheng.API.Services
 {
@@ -15,6 +15,28 @@ namespace FakeXiecheng.API.Services
         public TouristRepository(AppDbContext context)
         {
             _context = context;
+        }
+
+        public void AddTouristRoute(TouristRoute touristRoute)
+        {
+            if (touristRoute == null)
+            {
+                throw new ArgumentNullException(nameof(touristRoute));
+            }
+            _context.TouristRoutes.Add(touristRoute);
+        }
+
+        public void AddTouristRoutePicture(Guid touristRouteId, TouristRoutePicture picture)
+        {
+            if (touristRouteId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(touristRouteId));
+            }
+            if (picture == null)
+            {
+                throw new ArgumentException(nameof(picture));
+            }
+            _context.TouristRoutePictures.Add(picture);
         }
 
         public bool CheckIfTouristRouteExist(Guid touristRouteId)
@@ -45,7 +67,7 @@ namespace FakeXiecheng.API.Services
         {
             IQueryable<TouristRoute> result = _context.TouristRoutes.Include(r => r.TouristRoutePictures);
 
-            if(!string.IsNullOrWhiteSpace(keyword))
+            if (!string.IsNullOrWhiteSpace(keyword))
             {
                 keyword = keyword.Trim();
                 result = result.Where(t => t.Title.Contains(keyword));
@@ -62,6 +84,11 @@ namespace FakeXiecheng.API.Services
             }
 
             return result.ToList();
+        }
+
+        public bool Save()
+        {
+            return (_context.SaveChanges() >= 0);
         }
     }
 }
