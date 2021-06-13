@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Serialization;
 
 namespace FakeXiecheng.API
 {
@@ -32,34 +33,37 @@ namespace FakeXiecheng.API
 			services.AddControllers(setupAction =>
 			{
 				setupAction.ReturnHttpNotAcceptable = true;
-				//setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
-			}).AddXmlDataContractSerializerFormatters()
+		    //setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
+	    }).AddNewtonsoftJson(setupAction =>
+	    {
+		    setupAction.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+	    }).AddXmlDataContractSerializerFormatters()
 			.ConfigureApiBehaviorOptions(setupAction =>
 			{
 				setupAction.InvalidModelStateResponseFactory = context =>
-				{
-					var problemDetail = new ValidationProblemDetails(context.ModelState)
-					{
-						Type = "DoesNotMatter",
-						Title = "Data Validation Error",
-						Status = StatusCodes.Status422UnprocessableEntity,
-						Detail = "Details",
-						Instance = context.HttpContext.Request.Path
-					};
-					problemDetail.Extensions.Add("traceId", context.HttpContext.TraceIdentifier);
-					return new UnprocessableEntityObjectResult(problemDetail)
-					{
-						ContentTypes = { "application/problem+json" }
-					};
-				};
+		    {
+				    var problemDetail = new ValidationProblemDetails(context.ModelState)
+				    {
+					    Type = "DoesNotMatter",
+					    Title = "Data Validation Error",
+					    Status = StatusCodes.Status422UnprocessableEntity,
+					    Detail = "Details",
+					    Instance = context.HttpContext.Request.Path
+				    };
+				    problemDetail.Extensions.Add("traceId", context.HttpContext.TraceIdentifier);
+				    return new UnprocessableEntityObjectResult(problemDetail)
+				    {
+					    ContentTypes = { "application/problem+json" }
+				    };
+			    };
 			});
 
 			services.AddDbContext<AppDbContext>(option =>
-	    {
-		    option.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
-		    //option.UseSqlServer("server=localhost; Database=FakeXiechengDb; User Id=sa; Password=PaSSworld12!");
-		    //option.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=FakeXiechengDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-	    });
+		    {
+			    option.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
+		//option.UseSqlServer("server=localhost; Database=FakeXiechengDb; User Id=sa; Password=PaSSworld12!");
+		//option.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=FakeXiechengDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+	});
 			services.AddScoped<ITouristRouteRepository, TouristRepository>();
 			services.AddAutoMapper(typeof(TouristRouteProfile), typeof(TouristRoutePictureProfile));
 		}

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FakeXiecheng.API.Database;
+﻿using FakeXiecheng.API.Database;
 using FakeXiecheng.API.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FakeXiecheng.API.Services
 {
@@ -44,6 +43,21 @@ namespace FakeXiecheng.API.Services
             return _context.TouristRoutes.Any(r => r.Id == touristRouteId);
         }
 
+        public void DeleteTouristRoute(TouristRoute touristRoute)
+        {
+            _context.TouristRoutes.Remove(touristRoute);
+        }
+
+        public void DeleteTouristRoutePicture(TouristRoutePicture touristRoutePicture)
+        {
+            _context.TouristRoutePictures.Remove(touristRoutePicture);
+        }
+
+        public void DeleteTouristRoutes(IEnumerable<TouristRoute> touristRoutes)
+        {
+            _context.TouristRoutes.RemoveRange(touristRoutes);
+        }
+
         public TouristRoutePicture GetPicture(int pictureId)
         {
             return _context.TouristRoutePictures.Where(p => p.Id == pictureId).FirstOrDefault();
@@ -62,8 +76,8 @@ namespace FakeXiecheng.API.Services
         }
 
         public IEnumerable<TouristRoute> GetTouristRoutes(string keyword,
-                                                          string ratingComparison,
-                                                          int? ratingValue)
+                      string ratingComparison,
+                      int? ratingValue)
         {
             IQueryable<TouristRoute> result = _context.TouristRoutes.Include(r => r.TouristRoutePictures);
 
@@ -84,6 +98,11 @@ namespace FakeXiecheng.API.Services
             }
 
             return result.ToList();
+        }
+
+        public IEnumerable<TouristRoute> GetTouristRoutesByIdList(IEnumerable<Guid> touristRouteIds)
+        {
+            return _context.TouristRoutes.Where(t => touristRouteIds.Contains(t.Id)).ToList();
         }
 
         public bool Save()

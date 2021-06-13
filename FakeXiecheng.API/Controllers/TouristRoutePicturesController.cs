@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using FakeXiecheng.API.Dto;
+using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,6 @@ namespace FakeXiecheng.API.Controllers
             var pictures = _mapper.Map<IEnumerable<TouristRoutePictureDto>>(picturesFromRepo);
             return Ok(pictures);
         }
-
 
         [HttpGet("{pictureId}", Name = "GetPicture")]
         public IActionResult GetPicture(Guid touristRouteId, int pictureId)
@@ -86,5 +86,19 @@ namespace FakeXiecheng.API.Controllers
             );
         }
 
+        [HttpDelete]
+        public IActionResult DeletePicture([FromRoute] Guid touristRouteId, [FromRoute] int pictureId)
+        {
+            if (!_repo.CheckIfTouristRouteExist(touristRouteId))
+            {
+                return NotFound("旅游路线不存在");
+            }
+
+            var picture = _repo.GetPicture(pictureId);
+            _repo.DeleteTouristRoutePicture(picture);
+            _repo.Save();
+
+            return NoContent();
+        }
     }
 }
