@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using FakeXiecheng.API.Dto;
+using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -40,11 +41,9 @@ namespace FakeXiecheng.API.Controllers
             return Ok(pictures);
         }
 
-
-        [HttpGet("{pictureId}")]
+        [HttpGet("{pictureId}", Name = "GetPicture")]
         public IActionResult GetPicture(Guid touristRouteId, int pictureId)
         {
-            // return "value";
             if (!_repo.CheckIfTouristRouteExist(touristRouteId))
             {
                 return NotFound("旅游路线不存在");
@@ -58,8 +57,48 @@ namespace FakeXiecheng.API.Controllers
 
             var picture = _mapper.Map<TouristRoutePictureDto>(pictureFromRepo);
             return Ok(picture);
-
         }
 
+        [HttpPost]
+        public IActionResult CreateTouristRoutePicture(
+            [FromRoute] Guid touristRouteId,
+            [FromBody] TouristRoutePictureForCreationDto touristRoutePictureForCreationDto
+        )
+        {
+            if (!_repo.CheckIfTouristRouteExist(touristRouteId))
+            {
+                return NotFound("旅游路线不存在");
+            }
+
+            var pictureModel = _mapper.Map<TouristRoutePicture>(touristRoutePictureForCreationDto);
+            _repo.AddTouristRoutePicture(touristRouteId, pictureModel);
+            _repo.Save();
+
+            var result = _mapper.Map<TouristRoutePictureDto>(pictureModel);
+            return CreatedAtRoute(
+                "GetPicture",
+                new
+                {
+                    touristRouteId = pictureModel.TouristRouteId,
+                    pictureId = pictureModel.Id
+                },
+                result
+            );
+        }
+
+        [HttpDelete]
+        public IActionResult DeletePicture([FromRoute] Guid touristRouteId, [FromRoute] int pictureId)
+        {
+            if (!_repo.CheckIfTouristRouteExist(touristRouteId))
+            {
+                return NotFound("旅游路线不存在");
+            }
+
+            var picture = _repo.GetPicture(pictureId);
+            _repo.DeleteTouristRoutePicture(picture);
+            _repo.Save();
+
+            return NoContent();
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using AutoMapper;
 using FakeXiecheng.API.Dto;
 using FakeXiecheng.API.Models;
@@ -25,6 +26,16 @@ namespace FakeXiecheng.API.Profiles
                 dest => dest.DepartureCity,
                 opt => opt.MapFrom(src => src.DepartureCity.ToString())
             );
+
+            CreateMap<TouristRouteForCreationDto, TouristRoute>()
+            .ForMember(
+                dest => dest.Id,
+                opt => opt.MapFrom(src => Guid.NewGuid())
+            );
+
+            CreateMap<TouristRouteForUpdateDto, TouristRoute>();
+
+            CreateMap<TouristRoute, TouristRouteForUpdateDto>();
         }
     }
 }

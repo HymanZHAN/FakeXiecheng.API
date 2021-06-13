@@ -33,7 +33,7 @@ namespace FakeXiecheng.API.Models
 
         public TravelDays? TravelDays { get; set; }
 
-        public TripType? TripType{ get; set; }
+        public TripType? TripType { get; set; }
 
         public DepartureCity? DepartureCity { get; set; }
     }
