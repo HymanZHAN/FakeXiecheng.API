@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using FakeXiecheng.API.Dto;
 using FakeXiecheng.API.Helpers;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FakeXiecheng.API.Controllers
 {
-    [Route("api/touristRoutes/{touristRouteId}/pictures")]
+    [Route("api/touristRoutes/{routeId}/pictures")]
     [ApiController]
     public class TouristRoutePicturesController : ControllerBase
     {
@@ -24,14 +25,14 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetPictureForTouristRoute(Guid touristRouteId)
+        public async Task<IActionResult> GetPictureForTouristRoute(Guid routeId)
         {
-            if (!_repo.CheckIfTouristRouteExist(touristRouteId))
+            if (!await _repo.CheckIfTouristRouteExistAsync(routeId))
             {
                 return NotFound("旅游路线不存在");
             }
 
-            var picturesFromRepo = _repo.GetPicturesByTouristRouteId(touristRouteId);
+            var picturesFromRepo = await _repo.GetPicturesByTouristRouteIdAsync(routeId);
             if (picturesFromRepo == null || picturesFromRepo.Count() <= 0)
             {
                 return NotFound("照片不存在");
@@ -41,15 +42,15 @@ namespace FakeXiecheng.API.Controllers
             return Ok(pictures);
         }
 
-        [HttpGet("{pictureId}", Name = "GetPicture")]
-        public IActionResult GetPicture(Guid touristRouteId, int pictureId)
+        [HttpGet("{pictureId:int}", Name = "GetPicture")]
+        public async Task<IActionResult> GetPicture(Guid routeId, int pictureId)
         {
-            if (!_repo.CheckIfTouristRouteExist(touristRouteId))
+            if (!await _repo.CheckIfTouristRouteExistAsync(routeId))
             {
                 return NotFound("旅游路线不存在");
             }
 
-            var pictureFromRepo = _repo.GetPicture(pictureId);
+            var pictureFromRepo = await _repo.GetPictureAsync(pictureId);
             if (pictureFromRepo == null)
             {
                 return NotFound("图片不存在");
@@ -60,19 +61,19 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateTouristRoutePicture(
-            [FromRoute] Guid touristRouteId,
-            [FromBody] TouristRoutePictureForCreationDto touristRoutePictureForCreationDto
+        public async Task<IActionResult> CreateTouristRoutePicture(
+            [FromRoute] Guid routeId,
+            [FromBody] TouristRoutePictureForCreationDto routePictureForCreationDto
         )
         {
-            if (!_repo.CheckIfTouristRouteExist(touristRouteId))
+            if (!await _repo.CheckIfTouristRouteExistAsync(routeId))
             {
                 return NotFound("旅游路线不存在");
             }
 
-            var pictureModel = _mapper.Map<TouristRoutePicture>(touristRoutePictureForCreationDto);
-            _repo.AddTouristRoutePicture(touristRouteId, pictureModel);
-            _repo.Save();
+            var pictureModel = _mapper.Map<TouristRoutePicture>(routePictureForCreationDto);
+            _repo.AddTouristRoutePicture(routeId, pictureModel);
+            await _repo.SaveAsync();
 
             var result = _mapper.Map<TouristRoutePictureDto>(pictureModel);
             return CreatedAtRoute(
@@ -87,16 +88,16 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpDelete]
-        public IActionResult DeletePicture([FromRoute] Guid touristRouteId, [FromRoute] int pictureId)
+        public async Task<IActionResult> DeletePicture([FromRoute] Guid routeId, [FromRoute] int pictureId)
         {
-            if (!_repo.CheckIfTouristRouteExist(touristRouteId))
+            if (!await _repo.CheckIfTouristRouteExistAsync(routeId))
             {
                 return NotFound("旅游路线不存在");
             }
 
-            var picture = _repo.GetPicture(pictureId);
+            var picture = await _repo.GetPictureAsync(pictureId);
             _repo.DeleteTouristRoutePicture(picture);
-            _repo.Save();
+            await _repo.SaveAsync();
 
             return NoContent();
         }
