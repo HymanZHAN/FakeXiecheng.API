@@ -17,6 +17,11 @@ namespace FakeXiecheng.API.Services
             _context = context;
         }
 
+        public async Task AddShoppingCartItem(LineItem lineItem)
+        {
+            await _context.LineItems.AddAsync(lineItem);
+        }
+
         public async ValueTask AddTouristRouteAsync(TouristRoute route)
         {
             if (route == null)
@@ -49,6 +54,11 @@ namespace FakeXiecheng.API.Services
         public async Task CreateShoppingCart(ShoppingCart shoppingCart)
         {
             await _context.AddAsync(shoppingCart);
+        }
+
+        public void DeleteShoppingCartItem(LineItem lineItem)
+        {
+            _context.LineItems.Remove(lineItem);
         }
 
         public void DeleteTouristRoute(TouristRoute route)
