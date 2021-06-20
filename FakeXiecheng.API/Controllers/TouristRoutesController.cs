@@ -8,6 +8,7 @@ using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using FakeXiecheng.API.ResourceParameters;
 using FakeXiecheng.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,7 +31,7 @@ namespace FakeXiecheng.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTouristRoutes([FromQuery] TouristRouteResourceParameters parameters)
         {
-            var routesFromRepo =await  _touristRouteRepository.GetTouristRoutesAsync(parameters.Keyword,
+            var routesFromRepo = await _touristRouteRepository.GetTouristRoutesAsync(parameters.Keyword,
                               parameters.RatingComparison,
                               parameters.RatingValue);
 
@@ -61,6 +62,7 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateTouristRoute([FromBody] TouristRouteForCreationDto routeForCreateionDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(routeForCreateionDto);
@@ -80,7 +82,7 @@ namespace FakeXiecheng.API.Controllers
                 return NotFound("路由路线找不到");
             }
 
-            var touristRouteFromRepo =await _touristRouteRepository.GetTouristRouteAsync(routeId);
+            var touristRouteFromRepo = await _touristRouteRepository.GetTouristRouteAsync(routeId);
             // 1. 映射到dto
             // 2. 更新dto
             // 3. 映射到model

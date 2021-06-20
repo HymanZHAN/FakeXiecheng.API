@@ -1,5 +1,9 @@
 {
-  "cSpell.words": ["Xiecheng", "shoudongapi"],
+  "cSpell.words": [
+    "Xiecheng",
+    "fakexiecheng",
+    "shoudongapi"
+],
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
