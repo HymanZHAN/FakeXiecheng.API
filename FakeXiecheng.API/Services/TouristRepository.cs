@@ -1,10 +1,10 @@
-﻿using FakeXiecheng.API.Database;
-using FakeXiecheng.API.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FakeXiecheng.API.Database;
+using FakeXiecheng.API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FakeXiecheng.API.Services
 {
@@ -23,7 +23,7 @@ namespace FakeXiecheng.API.Services
             {
                 throw new ArgumentNullException(nameof(route));
             }
-            await  _context.TouristRoutes.AddAsync(route);
+            await _context.TouristRoutes.AddAsync(route);
         }
 
         public void AddTouristRoutePicture(Guid routeId, TouristRoutePicture picture)
@@ -44,6 +44,11 @@ namespace FakeXiecheng.API.Services
         public async Task<bool> CheckIfTouristRouteExistAsync(Guid routeId)
         {
             return await _context.TouristRoutes.AnyAsync(r => r.Id == routeId);
+        }
+
+        public async Task CreateShoppingCart(ShoppingCart shoppingCart)
+        {
+            await _context.AddAsync(shoppingCart);
         }
 
         public void DeleteTouristRoute(TouristRoute route)
@@ -69,6 +74,16 @@ namespace FakeXiecheng.API.Services
         public async Task<IEnumerable<TouristRoutePicture>> GetPicturesByTouristRouteIdAsync(Guid routeId)
         {
             return await _context.TouristRoutePictures.Where(p => p.TouristRouteId == routeId).ToListAsync();
+        }
+
+        public async Task<ShoppingCart> GetShoppingCartByUserId(string userId)
+        {
+            return await _context.ShoppingCarts
+                .Include(s => s.User)
+                .Include(s => s.ShoppingCartItems)
+                .ThenInclude(li => li.TouristRoute)
+                .Where(s => s.UserId == userId)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<TouristRoute> GetTouristRouteAsync(Guid routeId)

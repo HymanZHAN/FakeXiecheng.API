@@ -1,7 +1,7 @@
-﻿using FakeXiecheng.API.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FakeXiecheng.API.Models;
 
 namespace FakeXiecheng.API.Services
 {
@@ -29,6 +29,10 @@ namespace FakeXiecheng.API.Services
         void AddTouristRoutePicture(Guid routeId, TouristRoutePicture picture);
 
         void DeleteTouristRoutePicture(TouristRoutePicture routePicture);
+
+        Task<ShoppingCart> GetShoppingCartByUserId(string userId);
+
+        Task CreateShoppingCart(ShoppingCart shoppingCart);
 
         Task<bool> SaveAsync();
     }
