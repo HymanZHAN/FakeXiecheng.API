@@ -115,5 +115,29 @@ namespace FakeXiecheng.API.Controllers
             return NoContent();
         }
 
+        [HttpPost("checkout")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Checkout()
+        {
+            var userId = _httpContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var shoppingCart = await _touristRouteRepository.GetShoppingCartByUserId(userId);
+
+            var order = new Order()
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                State = OrderStateEnum.Pending,
+                OrderItems = shoppingCart.ShoppingCartItems,
+                CreateDateUTC = DateTime.UtcNow
+            };
+
+            shoppingCart.ShoppingCartItems = null;
+
+            await _touristRouteRepository.AddOrderAsync(order);
+            await _touristRouteRepository.SaveAsync();
+
+            return Ok(_mapper.Map<OrderDto>(order));
+        }
+
     }
 }

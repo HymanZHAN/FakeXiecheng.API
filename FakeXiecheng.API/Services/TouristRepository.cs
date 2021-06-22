@@ -17,6 +17,11 @@ namespace FakeXiecheng.API.Services
             _context = context;
         }
 
+        public async Task AddOrderAsync(Order order)
+        {
+            await _context.Orders.AddAsync(order);
+        }
+
         public async Task AddShoppingCartItem(LineItem lineItem)
         {
             await _context.LineItems.AddAsync(lineItem);
