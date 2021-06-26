@@ -91,6 +91,7 @@ namespace FakeXiecheng.API
             });
             services.AddScoped<ITouristRouteRepository, TouristRepository>();
             services.AddAutoMapper(typeof(TouristRouteProfile), typeof(TouristRoutePictureProfile));
+            services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

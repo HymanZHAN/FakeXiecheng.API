@@ -81,6 +81,20 @@ namespace FakeXiecheng.API.Services
             _context.TouristRoutes.RemoveRange(routes);
         }
 
+        public async Task<Order> GetOrderById(Guid orderId)
+        {
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(i => i.TouristRoute)
+                .Where(o => o.Id == orderId)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetOrdersByUserId(string userId)
+        {
+            return await _context.Orders.Where(o => o.UserId == userId).ToListAsync();
+        }
+
         public async Task<TouristRoutePicture> GetPictureAsync(int pictureId)
         {
             return await _context.TouristRoutePictures.Where(p => p.Id == pictureId).FirstOrDefaultAsync();
