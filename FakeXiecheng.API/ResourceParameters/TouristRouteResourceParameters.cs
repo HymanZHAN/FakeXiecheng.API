@@ -5,6 +5,8 @@ namespace FakeXiecheng.API.ResourceParameters
 {
     public class TouristRouteResourceParameters
     {
+        
+
         public string Keyword { get; set; }
         public string RatingComparison { get; set; }
         public int? RatingValue { get; set; }

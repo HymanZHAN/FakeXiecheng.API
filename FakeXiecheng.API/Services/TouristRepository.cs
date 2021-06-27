@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeXiecheng.API.Database;
+using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -90,9 +91,11 @@ namespace FakeXiecheng.API.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersByUserId(string userId)
+        public async Task<PaginationList<Order>> GetOrdersByUserId(string userId, int pageNumber, int pageSize)
         {
-            return await _context.Orders.Where(o => o.UserId == userId).ToListAsync();
+            // return await _context.Orders.Where(o => o.UserId == userId).ToListAsync();
+            IQueryable<Order> result = _context.Orders.Where(o => o.UserId == userId);
+            return await PaginationList<Order>.CreateAsync(pageNumber, pageSize, result);
         }
 
         public async Task<TouristRoutePicture> GetPictureAsync(int pictureId)
@@ -122,9 +125,12 @@ namespace FakeXiecheng.API.Services
                 .FirstOrDefaultAsync(r => r.Id == routeId);
         }
 
-        public async Task<IEnumerable<TouristRoute>> GetTouristRoutesAsync(string keyword,
+        public async Task<PaginationList<TouristRoute>> GetTouristRoutesAsync(string keyword,
             string ratingComparison,
-            int? ratingValue)
+            int? ratingValue,
+            int pageNumber,
+            int pageSize
+            )
         {
             IQueryable<TouristRoute> result = _context.TouristRoutes.Include(r => r.TouristRoutePictures);
 
@@ -144,7 +150,7 @@ namespace FakeXiecheng.API.Services
                 };
             }
 
-            return await result.ToListAsync();
+            return await PaginationList<TouristRoute>.CreateAsync(pageNumber, pageSize, result);
         }
 
         public async Task<IEnumerable<TouristRoute>> GetTouristRoutesByIdListAsync(IEnumerable<Guid> routeIds)

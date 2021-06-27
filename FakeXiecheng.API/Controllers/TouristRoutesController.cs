@@ -29,11 +29,17 @@ namespace FakeXiecheng.API.Controllers
 
         [HttpHead]
         [HttpGet]
-        public async Task<IActionResult> GetTouristRoutes([FromQuery] TouristRouteResourceParameters parameters)
+        public async Task<IActionResult> GetTouristRoutes(
+            [FromQuery] TouristRouteResourceParameters trParameters,
+            [FromQuery] PaginationResourceParameters pgParameters)
         {
-            var routesFromRepo = await _touristRouteRepository.GetTouristRoutesAsync(parameters.Keyword,
-                              parameters.RatingComparison,
-                              parameters.RatingValue);
+            var routesFromRepo = await _touristRouteRepository.GetTouristRoutesAsync(
+                trParameters.Keyword,
+                trParameters.RatingComparison,
+                trParameters.RatingValue,
+                pgParameters.PageNumber,
+                pgParameters.PageSize
+                );
 
             if (routesFromRepo == null || !routesFromRepo.Any())
             {

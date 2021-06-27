@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 
 namespace FakeXiecheng.API.Services
 {
     public interface ITouristRouteRepository
     {
-        Task<IEnumerable<TouristRoute>>
-            GetTouristRoutesAsync(string keyword, string ratingComparison, int? ratingValue);
+        Task<PaginationList<TouristRoute>> GetTouristRoutesAsync(
+            string keyword, string ratingComparison, int? ratingValue,
+            int pageNumber, int pageSize
+        );
 
         Task<TouristRoute> GetTouristRouteAsync(Guid routeId);
 
@@ -40,7 +43,7 @@ namespace FakeXiecheng.API.Services
 
         Task AddOrderAsync(Order order);
 
-        Task<IEnumerable<Order>> GetOrdersByUserId(string userId);
+        Task<PaginationList<Order>> GetOrdersByUserId(string userId, int pageNumber, int pageSize);
 
         Task<Order> GetOrderById(Guid orderId);
 
