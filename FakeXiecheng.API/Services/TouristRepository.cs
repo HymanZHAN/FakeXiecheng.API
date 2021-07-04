@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeXiecheng.API.Database;
+using FakeXiecheng.API.Dto;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +13,11 @@ namespace FakeXiecheng.API.Services
     public class TouristRepository : ITouristRouteRepository
     {
         private readonly AppDbContext _context;
+        private readonly IPropertyMappingService _propertyMappingService;
 
-        public TouristRepository(AppDbContext context)
+        public TouristRepository(AppDbContext context, IPropertyMappingService propertyMappingService)
         {
+            _propertyMappingService = propertyMappingService;
             _context = context;
         }
 
@@ -125,12 +128,13 @@ namespace FakeXiecheng.API.Services
                 .FirstOrDefaultAsync(r => r.Id == routeId);
         }
 
-        public async Task<PaginationList<TouristRoute>> GetTouristRoutesAsync(string keyword,
+        public async Task<PaginationList<TouristRoute>> GetTouristRoutesAsync(
+            string orderBy,
+            string keyword,
             string ratingComparison,
             int? ratingValue,
             int pageNumber,
-            int pageSize
-            )
+            int pageSize)
         {
             IQueryable<TouristRoute> result = _context.TouristRoutes.Include(r => r.TouristRoutePictures);
 
@@ -148,6 +152,14 @@ namespace FakeXiecheng.API.Services
                     "lessThan" => result.Where(t => t.Rating <= ratingValue),
                     _ => result.Where(t => t.Rating == ratingValue)
                 };
+            }
+
+            if (!string.IsNullOrWhiteSpace(orderBy))
+            {
+                var touristRouteMappingDict = _propertyMappingService
+                    .GetPropertyMapping<TouristRouteDto, TouristRoute>();
+
+                result = result.ApplySort(orderBy, touristRouteMappingDict);
             }
 
             return await PaginationList<TouristRoute>.CreateAsync(pageNumber, pageSize, result);

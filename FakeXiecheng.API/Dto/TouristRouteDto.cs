@@ -1,6 +1,6 @@
-﻿using FakeXiecheng.API.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using FakeXiecheng.API.Models;
 
 namespace FakeXiecheng.API.Dto
 {
@@ -10,6 +10,8 @@ namespace FakeXiecheng.API.Dto
         public string Title { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }
+        public decimal OriginalPrice { get; set; }
+        public decimal DiscountPresent { get; set; }
 
         public DateTime CreateTime { get; set; }
         public DateTime? UpdateTime { get; set; }

@@ -5,8 +5,7 @@ namespace FakeXiecheng.API.ResourceParameters
 {
     public class TouristRouteResourceParameters
     {
-        
-
+        public string OrderBy { get; set; }
         public string Keyword { get; set; }
         public string RatingComparison { get; set; }
         public int? RatingValue { get; set; }
@@ -32,5 +31,7 @@ namespace FakeXiecheng.API.ResourceParameters
                 }
             }
         }
+
+        public string Fields { get; set; }
     }
 }

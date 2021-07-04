@@ -25,13 +25,13 @@ namespace FakeXiecheng.API.Controllers
         private readonly ITouristRouteRepository _touristRouteRepository;
         private readonly IMapper _mapper;
         private readonly IUrlHelper _urlHelper;
+        private readonly IPropertyMappingService _propertyMappingService;
 
-        public TouristRoutesController(
-            ITouristRouteRepository routeRepository,
-            IMapper mapper,
-            IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor)
+        public TouristRoutesController(ITouristRouteRepository routeRepository, IMapper mapper,
+                                       IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor,
+                                       IPropertyMappingService propertyMappingService)
         {
+            _propertyMappingService = propertyMappingService;
             _mapper = mapper;
             _touristRouteRepository = routeRepository;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
@@ -49,6 +49,8 @@ namespace FakeXiecheng.API.Controllers
                     "GetTouristRoutes",
                     new
                     {
+                        fields = trParameters.Fields,
+                        orderBy = trParameters.OrderBy,
                         keyword = trParameters.Keyword,
                         ratingComparison = trParameters.RatingComparison,
                         rating = trParameters.RatingValue,
@@ -59,6 +61,8 @@ namespace FakeXiecheng.API.Controllers
                     "GetTouristRoutes",
                     new
                     {
+                        fields = trParameters.Fields,
+                        orderBy = trParameters.OrderBy,
                         keyword = trParameters.Keyword,
                         ratingComparison = trParameters.RatingComparison,
                         rating = trParameters.RatingValue,
@@ -69,6 +73,8 @@ namespace FakeXiecheng.API.Controllers
                     "GetTouristRoutes",
                     new
                     {
+                        fields = trParameters.Fields,
+                        orderBy = trParameters.OrderBy,
                         keyword = trParameters.Keyword,
                         ratingComparison = trParameters.RatingComparison,
                         rating = trParameters.RatingValue,
@@ -84,7 +90,17 @@ namespace FakeXiecheng.API.Controllers
             [FromQuery] TouristRouteResourceParameters trParameters,
             [FromQuery] PaginationResourceParameters pgParameters)
         {
+            if (!_propertyMappingService.IsMappingAvailable<TouristRouteDto, TouristRoute>(trParameters.OrderBy))
+            {
+                return BadRequest("请输入正确的排序参数");
+            }
+            if (!_propertyMappingService.ArePropertiesAvailable<TouristRouteDto>(trParameters.Fields))
+            {
+                return BadRequest("请输入正确的属性参数");
+            }
+
             var routesFromRepo = await _touristRouteRepository.GetTouristRoutesAsync(
+                trParameters.OrderBy,
                 trParameters.Keyword,
                 trParameters.RatingComparison,
                 trParameters.RatingValue,
@@ -119,7 +135,6 @@ namespace FakeXiecheng.API.Controllers
                 totalPages = routesFromRepo.TotalPages,
             };
 
-
             var jso = new JsonSerializerOptions
             {
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -127,13 +142,17 @@ namespace FakeXiecheng.API.Controllers
             var paginationHeader = JsonSerializer.Serialize(paginationMetadata, jso);
 
             Response.Headers.Add("x-pagination", paginationHeader);
-            return Ok(touristRoutes);
+            return Ok(touristRoutes.ShapeData(trParameters.Fields));
         }
 
         [HttpGet("{routeId:Guid}", Name = "GetTouristRouteById")]
         [HttpHead("{routeId:Guid}")]
-        public async Task<IActionResult> GetTouristRouteById(Guid routeId)
+        public async Task<IActionResult> GetTouristRouteById(Guid routeId, [FromQuery] string fields)
         {
+            if (!_propertyMappingService.ArePropertiesAvailable<TouristRouteDto>(fields))
+            {
+                return BadRequest("请输入正确的属性参数");
+            }
             var routeFromRepo = await _touristRouteRepository.GetTouristRouteAsync(routeId);
 
             if (routeFromRepo == null)
@@ -143,7 +162,7 @@ namespace FakeXiecheng.API.Controllers
 
             var touristRouteDto = _mapper.Map<TouristRouteDto>(routeFromRepo);
 
-            return Ok(touristRouteDto);
+            return Ok(touristRouteDto.ShapeData(fields));
         }
 
         [HttpPost]
